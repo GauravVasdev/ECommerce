@@ -1,0 +1,181 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://kit.fontawesome.com/613a7f3344.js" crossorigin="anonymous"></script>
+  <style>
+    *{
+      font-family: verdana;
+      font-weight: lighter;
+    }
+    .upperbox{
+      box-shadow:0px 0px 10px rgba(0,0,0,0.6);
+    }
+    .continueshoppingbtn{
+      color:#444;
+    }
+    .continueshoppingbtn:hover{
+      background-color:rgba(0,0,0,0.1);
+      box-shadow: 2px 2px 2px rgba(0,0,0,0.2);
+    }
+    img{
+        max-width: 100%;
+        max-height: 100%;
+        display: block;
+        margin: auto;
+         /* remove extra space below image */
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-md bg-dark navbar-dark" style="height:auto;">
+        <a class="navbar-brand" href="#">Ecom</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="collapsibleNavbar">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <!-- <a href="../loginforecommerce.html" class="btn" style="background-color: yellow;">Login</a> -->
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#"><i class="fas fa-cart-plus" style="font-size: 25px;color:white"></i><span class="badge" style="color:white;font-size: 10px;background-color: red;vertical-align: top"> {{items}}</span></a>
+            </li>    
+          </ul>
+        </div>  
+    </nav>
+  <div class="container" style="margin-top: 50px;">
+    <div class="row upperbox">
+      <div class="col-12 p-3">
+        <a href={% if C_ID %} "../men_items/?C_ID={{C_ID}}"  {% else %}  "../men_items/" {% endif %} class="btn border btn-lg continueshoppingbtn"><i class="fas fa-long-arrow-alt-left mr-2"></i>Continue Shopping</a>
+      </div>
+      <hr style="width:100%;margin:0;">
+      <div class="col-md-3 p-5" style="font-size: 20px;">
+        Items : <span class="total_items">{{items}}</span>
+      </div>
+      <div class="col-md-7 p-5" style="font-size: 20px;">
+        Total(in ruppees) : <span class="total_items_cost">{{total_cost}}</span>
+      </div>
+      <div class="col-md-1 p-5">
+        <a href={% if C_ID %} "../checkoutpageforecommerce/?C_ID={{C_ID}}" {% else %}  "../checkoutpageforecommerce/" {% endif %} class="btn btn-secondary checkoutbtn">Checkout</a>
+      </div>
+    </div>
+    <div class="row upperbox" style="margin-top:40px;">
+        <table class="table">
+          <thead style="font-size: 18px;font-weight: normal;color:rgba(0,0,0,0.6)">
+            <tr>
+              <th></th>
+              <th>Item</th>
+              <th>Price</th>
+              <th>Quantity</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody style="font-size: 15px;" class="tbodyclass">
+            {% for res in order_details %}
+              <tr style="border-bottom:1px solid rgba(0,0,0,0.2);" id="{{res.product_Id}}" class="tablerow">
+                  <td><div style="height:100px;"><img src="/static/{{res.order_product_img_path}}"></div></td>
+                  <td style="vertical-align: middle">{{res.Order_product_name}}</td>
+                  <td style="vertical-align: middle" class="product_cost">{{res.order_product_cost}}Rs</td>
+                  <td style="vertical-align: middle"><i class="fas fa-caret-up upitembtn" style="position:relative;top:-10px;"></i><i class="fas fa-caret-down downitembtn" style="position:relative;top:10px;left:-8.9px;"></i><span class="itemcount">{{res.no_of_items}}</span></td>
+                  <td style="vertical-align: middle" class="cost_class">{% widthratio res.order_product_cost 1 res.no_of_items %}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+    </div>
+  </div>
+<script>
+  $(document).ready(function(){
+    $(".checkoutbtn").click(function(){
+        window.location.href="{% url 'checkoutpageforecommerce' %}";
+    });
+    $(".upitembtn").click(function(){
+        var a=$(this);
+        Product_Id=$(this).parent().parent().attr('id');
+        var Product_Id=$(this).parent().parent().attr('id')
+            $.ajax({
+              type: 'post',
+              url: "{% url 'addtocartajaxrequest' %}",
+              data: {'Product_Id':Product_Id,'C_ID':'{{C_ID}}'},  //JSON.stringify(obj)
+              headers: {'X-CSRFToken': '{{ csrf_token }}'},
+              async: true,
+              success: function (response) {
+                console.log(response);
+                $(".badge").text(response);
+                $(".total_items").text(response);
+                var item=parseInt(a.parent().text());
+                item=item+1;
+                a.parent().find(".itemcount").text(item.toString());
+                var cost=parseInt(a.parent().parent().find(".product_cost").text())
+                var items=parseInt(a.parent().parent().find(".itemcount").text())
+                a.parent().parent().find('.cost_class').text(cost*items)
+                var sum=0;
+                a.parent().parent().parent().find('.cost_class').each(function(){
+                  sum=sum+parseInt($(this).text());
+                });
+                console.log(sum)
+                $(".total_items_cost").text(sum);
+              }
+               }).done(function (data) {
+              console.log(data);
+            });	
+    });
+    $(".downitembtn").click(function(){
+      var a=$(this);
+        var Product_Id=$(this).parent().parent().attr('id')
+        $.ajax({
+          type: 'post',
+          url: "{% url 'downitembyajaxrequest' %}",
+          data: {'Product_Id':Product_Id,'C_ID':'{{C_ID}}'},  //JSON.stringify(obj)
+          headers: {'X-CSRFToken': '{{ csrf_token }}'},
+          async: true,
+          success: function (response) {
+            var flag=0;
+            var totalcostar=0
+            var sum=0
+            console.log(response);
+            $(".badge").text(response);
+            $(".total_items").text(response);
+            var item=parseInt(a.parent().text());
+            item=item-1;
+            if(item==0){
+              a.parent().parent().hide();
+            }
+            else{
+              a.parent().find(".itemcount").text(item.toString());
+            }
+            a.parent().parent().parent().find('.tablerow').each(function(){
+              var cost=parseInt($(this).find(".product_cost").text());
+              var items=parseInt($(this).find(".itemcount").text());
+              $(this).find(".cost_class").text(cost*items);
+            });
+            a.parent().parent().parent().find('.tablerow').each(function(){
+              if($(this).css('display')!='none'){
+                   sum=sum+parseInt($(this).find('.cost_class').text());
+              }
+           });
+           $(".total_items_cost").text(sum);
+            console.log(sum);
+          }
+          }).done(function (data) {
+          console.log(data);
+        });	
+    });
+    var sum1=0
+    $(".tbodyclass").find('.cost_class').each(function(){
+      sum1=sum1+parseInt($(this).text());
+    });
+    $(".total_items_cost").text(sum1);
+  });
+</script>
+</body>
+</html>

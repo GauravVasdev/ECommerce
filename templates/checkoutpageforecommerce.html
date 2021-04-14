@@ -1,0 +1,148 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://kit.fontawesome.com/613a7f3344.js" crossorigin="anonymous"></script>
+  <style>
+    *{
+      font-weight: lighter;
+      font-family: verdana;
+      color:#444;
+    }
+    img{
+        max-width: 100%;
+        max-height: 100%;
+        display: block;
+         /* remove extra space below image */
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-md bg-dark navbar-dark" style="height:auto;">
+        <a class="navbar-brand" href="#">Ecom</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="collapsibleNavbar">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'Cartforecommerce' %}"><i class="fas fa-cart-plus" style="font-size: 25px;color:white"></i><span class="badge" style="color:white;font-size: 10px;background-color: red;vertical-align: top">{{items}}</span></a>
+            </li>    
+          </ul>
+        </div>  
+    </nav>
+    <div class="container-fluid mt-5" style="width:75%;margin:auto;">
+      <div class="row">
+        <div class="col-6 pt-2 px-5 pb-3" style="box-shadow: 0px 0px 10px rgba(0,0,0,0.3);height:400px">
+          <hr>
+            <h2 style="font-weight:normal;font-size: 20px;" class="mt-4 mb-4">Shipping information :</h2>
+          <hr>
+          <div class="row">
+              <div class="col-6">
+                <div class="form-group mt-3">
+                  <input type="text" class="form-control addressfield" name="address" placeholder="Address.." required>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="form-group mt-3">
+                  <input type="text" class="form-control cityfield" name="city" placeholder="City.." required>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="form-group mt-1">
+                  <input type="text" class="form-control statefield" name="state" placeholder="State.." required>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="form-group mt-1">
+                  <input type="text" class="form-control zipcode1field" name="Zip code1" placeholder="Zip code.." required>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="form-group mt-1">
+                  <input type="text" class="form-control zipcode2field" name="zip code2" placeholder="Zip Code.." required>
+                </div>
+              </div>
+              <hr style="width:100%">
+              <button  class="btn btn-block mt-2 continuebtn" style="box-shadow:0px 0px 10px rgba(0,0,0,0.1);border:2px solid rgba(0,0,0,0.3);color:#444;background-color: rgba(0,0,0,0.1)">Continue</button>
+          </div>
+        </div>
+        <div class="col-5 ml-5 pb-3" style="box-shadow: 0px 0px 10px rgba(0,0,0,0.3);">
+          <a href={% if C_ID %} "../Cartforecommerce/?C_ID={{C_ID}}" {% else %} "../Cartforecommerce/" {% endif %} class="btn border mt-2 backtocartbtn" style="background-color:white;color:black;padding:10px;"><i class="fas fa-long-arrow-alt-left mr-2"></i>Back to Cart</a>
+          <hr style="width:100%;">
+          <h4>Order Summary</h4>
+          <hr style="width:100%;">
+          <table class="table">
+              <tbody class="tbodyclass">
+                {% for res in order_details %}
+                  <tr style="border-bottom:1px solid rgba(0,0,0,0.2);" class="tablerowclass">
+                    <td><div style="height:100px;"><img src="/static/{{res.order_product_img_path}}"></div></td>
+                    <td style="vertical-align: middle">{{res.Order_product_name}}</td>
+                    <td style="vertical-align: middle">{{res.no_of_items}}</td>
+                    <td style="vertical-align: middle" class="cost_of_item">{% widthratio res.order_product_cost 1 res.no_of_items %}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+          </table>
+          <div class="mt-4"> <span>Items :</span>{{items}}</div>
+          <div class="mt-4 mr-5"><span class="mr-2"> Total :</span><span class="totalcost">{{total_cost}}</span></div>
+        </div>
+      </div>
+    </div>
+    <script>
+      var sum=0
+      $(".tbodyclass").find(".tablerowclass").each(function(){
+          sum=sum+parseInt($(this).find(".cost_of_item").text());
+      });
+      $(".totalcost").text(sum);
+      $(".continuebtn").click(function(){
+        if($(".addressfield").val()==""){
+            alert("Please fill your address");
+        }
+        else if($(".cityfield").val()==""){
+            alert("Please fill your city");
+        }
+        else if($(".statefield").val()==""){
+            alert("Please fill your state");
+        }
+        else if($(".zipcode1field").val()==""){
+          alert("Please fill your first zipcode");
+        }
+        else if($(".zipcode2field").val()==""){
+          alert("Please fill your second zipcode");
+        }
+        else{
+          var cust_adress=$(".addressfield").val()
+          var cust_city=$(".cityfield").val()
+          var cust_state=$(".statefield").val()
+          var cust_zipcode1=$(".zipcode1field").val()
+          var cus_zipcode2=$(".zipcode2field").val()
+          $.ajax({
+            type: 'post',
+            url: "{% url 'checkoutshippinginformation' %}",
+            data: {'cust_adress':cust_adress,'cust_city':cust_city,'cust_state':cust_state,'cust_zipcode1':cust_zipcode1,'cus_zipcode2':cus_zipcode2,'C_ID':'{{C_ID}}'},  //JSON.stringify(obj)
+            headers: {'X-CSRFToken': '{{ csrf_token }}'},
+            async: true,
+            success: function (response) {
+              console.log(response);
+              alert("Congrats,Your order has been approved.")
+            }
+             }).done(function (data) {
+            console.log(data);
+          });	
+        }
+      });
+    </script>
+</body>
+</html>
+
