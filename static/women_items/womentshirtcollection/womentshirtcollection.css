@@ -1,0 +1,66 @@
+*{
+       font-size: 20px;
+       font-weight: lighter;
+    }
+	.navitembtn{
+		font-size: 20px;
+	}
+	.navitembtn:hover{
+      color: rgba(0,0,0,0.3);
+    }
+	.active{
+      color:lightgreen;
+      border-bottom: 1px solid lightgreen;
+    }
+    .active:hover{
+      color:lightgreen;
+      border-bottom: 1px solid lightgreen;
+    }
+    .womentshirtpic{
+		    height:300px;
+		    background-size: contain;
+		    background-position: center;
+		    background-repeat: no-repeat;
+		    transition: transform .2s;
+		    position:relative;
+    }
+    .womentshirtpic:hover{
+    	transform: scale(1.05);
+    }
+    .btnelement{
+    	display: none;
+    	background-color: black;
+    	color:white;
+    	font-size:17px;
+    	width:50%;
+    	border-radius: 5px;
+    	padding:6px;
+    }
+    .addtocart:hover{
+    	background-color:rgba(0,0,0,0.1);
+      	color:#444;
+    }
+    .pagelink{
+      font-size: 25px;
+      color:black;
+      font-weight: normal;
+      text-decoration: none;
+    }
+    .pagelink:hover{
+      text-decoration: none;
+      color:rgba(0,0,0,0.1);
+    }
+    .active{
+      color:lightgreen;
+      border-bottom: 1px solid lightgreen;
+    }
+    .active:hover{
+      color:lightgreen;
+      border-bottom: 1px solid lightgreen;
+    }
+    .backbtn:hover{
+      color:rgba(0,0,0,0.3);
+    }
+    .bchtext{
+      display:none;
+    }
